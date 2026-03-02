@@ -932,7 +932,73 @@
 <p>Visual deck expansion (team slides, tech validation, etc.)</p>
 </li>
 </ul>
-<p>You’re building a powerful and <em>strategically necessary</em> solution — and this enhanced narrative makes a strong case for defense-focused seed capital.</p>Sources
+<p>You’re building a powerful and <em>strategically necessary</em> solution — and this enhanced narrative makes a strong case for defense-focused seed capital.</p><hr>
+<h2>📚 In-Depth Appendix</h2>
+<h3>A. Modeling Assumptions Register (Template)</h3>
+<table><thead><tr><th>Assumption ID</th><th>Variable</th><th>Baseline</th><th>Range</th><th>Why it matters</th></tr></thead><tbody>
+<tr><td>A-01</td><td>Drone closing speed</td><td>22 m/s</td><td>12–38 m/s</td><td>Defines trigger timing window and relative intercept geometry.</td></tr>
+<tr><td>A-02</td><td>Engagement distance</td><td>350 m</td><td>150–800 m</td><td>Changes TOF, dispersion and confidence threshold tuning.</td></tr>
+<tr><td>A-03</td><td>Burst standoff</td><td>1.0 m</td><td>0.6–1.8 m</td><td>Primary determinant of fragment density on target silhouette.</td></tr>
+<tr><td>A-04</td><td>Sensor latency</td><td>5 ms</td><td>2–12 ms</td><td>Directly contributes to miss-distance if not compensated.</td></tr>
+<tr><td>A-05</td><td>Kill criterion</td><td>&gt;= 3 critical hits</td><td>1–5 hits</td><td>Converts cone-hit model to mission-level PK estimate.</td></tr>
+</tbody></table>
+<h3>B. Equations &amp; Core Calculations</h3>
+<ul>
+<li><p><strong>B.1 Time-to-Intercept:</strong> \( t_{go}=rac{R}{V_{rel}} \)</p></li>
+<li><p><strong>B.2 Trigger lead correction:</strong> \( \Delta R = V_{rel}(t_{sensor}+t_{compute}+t_{firechain}) \)</p></li>
+<li><p><strong>B.3 Fragment density approximation:</strong> \( ho_f(r)=rac{N_f}{2\pi r^2(1-\cos	heta)} \)</p></li>
+<li><p><strong>B.4 Single-shot kill probability:</strong> \(P_k=1-(1-P_hP_dP_fP_c)^{n}\)</p></li>
+<li><p><strong>B.5 Campaign effectiveness:</strong> \(E=\sum_i w_i P_{k,i}-\lambda C_{ammo}\)</p></li>
+</ul>
+<p><em>Where:</em> <code>Ph</code> = geometric hit probability, <code>Pd</code> = detection confidence, <code>Pf</code> = fuse actuation success, <code>Pc</code> = critical subsystem damage probability, <code>n</code> = rounds fired per engagement.</p>
+<h3>C. Event-Driven Fire-Control Logic (Pseudo-state machine)</h3>
+<ol>
+<li><p><strong>SAFE</strong> → verify launch acceleration + spin profile + elapsed minimum arm time.</p></li>
+<li><p><strong>ARMED</strong> → activate sensing pipeline, apply clutter rejection, estimate relative range rate.</p></li>
+<li><p><strong>TRACK</strong> → maintain confidence score; update predicted closest point of approach.</p></li>
+<li><p><strong>TRIGGER WINDOW</strong> → fire only if confidence &gt; threshold and standoff is within configured band.</p></li>
+<li><p><strong>ABORT/DISARM</strong> → no-detection timeout, confidence collapse, or health fault conditions.</p></li>
+</ol>
+<h3>D. Monte Carlo Study Design</h3>
+<p>Run 10,000+ trials per scenario cell; vary target aspect angle, speed, crosswind, sensor noise, latency, and muzzle velocity spread. Capture:</p>
+<ul>
+<li><p>D.1 <strong>Primary outputs:</strong> PK, miss distance, false burst rate, rounds-per-kill.</p></li>
+<li><p>D.2 <strong>Robustness outputs:</strong> 5th percentile PK and worst-case confidence collapse rate.</p></li>
+<li><p>D.3 <strong>Safety outputs:</strong> premature burst probability and no-target burst probability.</p></li>
+</ul>
+<h3>E. Validation Matrix (Lab → Range)</h3>
+<table><thead><tr><th>Phase</th><th>Objective</th><th>Instrumentation</th><th>Exit criterion</th></tr></thead><tbody>
+<tr><td>E1 Bench</td><td>Sensor + compute latency characterization</td><td>Oscilloscope, HIL rig</td><td>&lt;= latency budget at P95</td></tr>
+<tr><td>E2 Inert spin rig</td><td>Arming reliability under launch-like dynamics</td><td>Spin fixture + IMU logs</td><td>&gt;= 99% correct state transitions</td></tr>
+<tr><td>E3 Controlled fragmentation</td><td>Cone symmetry and density map</td><td>Witness plates + high-speed camera</td><td>Within design tolerance band</td></tr>
+<tr><td>E4 Inert ballistic</td><td>Trajectory + timing alignment</td><td>Doppler/radar telemetry</td><td>Predicted vs observed error &lt; threshold</td></tr>
+<tr><td>E5 Supervised range</td><td>System-level engagement effectiveness</td><td>Range telemetry + post-shot forensics</td><td>TRL-4 evidence package complete</td></tr>
+</tbody></table>
+<h3>F. Program Risk Register (Operational)</h3>
+<ul>
+<li><p><strong>F.1 Sensor saturation in clutter:</strong> mitigate with adaptive thresholds + multi-frame confirmation.</p></li>
+<li><p><strong>F.2 Fire-chain timing drift:</strong> mitigate through periodic calibration and production end-of-line timing tests.</p></li>
+<li><p><strong>F.3 Environmental seal failure:</strong> mitigate with conformal coating, gasket redesign, and HALT/HASS cycles.</p></li>
+<li><p><strong>F.4 Supply-chain variance:</strong> dual-source critical components and enforce incoming QA gates.</p></li>
+<li><p><strong>F.5 Regulatory/test access delays:</strong> parallelize documentation and pre-book test windows.</p></li>
+</ul>
+<h3>G. Investor-Facing KPI Dashboard (Recommended)</h3>
+<ul>
+<li><p>G.1 Technical: arming reliability, trigger timing error, PK@P50/P90, false burst rate.</p></li>
+<li><p>G.2 Program: milestone burn vs plan, test pass ratio, component lead-time risk index.</p></li>
+<li><p>G.3 Commercial: unit economics by volume tier, pipeline value, expected procurement conversion.</p></li>
+</ul>
+<h3>H. Appendix Deliverables Checklist</h3>
+<ul>
+<li><p>H.1 Assumptions log (versioned)</p></li>
+<li><p>H.2 Equation sheet and parameter dictionary</p></li>
+<li><p>H.3 Simulation configuration pack</p></li>
+<li><p>H.4 Test protocol pack (bench, inert, range)</p></li>
+<li><p>H.5 Compliance and safety evidence index</p></li>
+<li><p>H.6 Investor KPI monthly snapshot format</p></li>
+</ul>
+<p>This appendix is meant to be directly reusable as the back-matter for a technical dossier, grant submission, or diligence packet.</p>
+Sources
             
         </div>
         </div>
